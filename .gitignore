@@ -1,0 +1,13 @@
+# 运行时产物
+archive/
+/tmp/
+*.log
+.DS_Store
+
+# 用户数据：冷备 CSV 含真实记录，永不入库
+data-*.csv
+*.csv
+
+# 本地配置
+.env
+config.local.*
