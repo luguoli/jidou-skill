@@ -5,7 +5,7 @@
 ## 零、文件结构
 
 ```
-quicksave/
+jidou/
 ├── SKILL.md                      主流程（零到十五章）
 ├── CHANGELOG.md                  版本变更记录
 ├── archive/                      历史版本快照，只进不改
@@ -24,7 +24,7 @@ quicksave/
     └── dependencies.md           本文件
 ```
 
-**本技能只在这四个位置放东西。** 临时文件放 `/tmp/qs-<用途>/`，用完删；给用户的成品放 `/workspace` 或资料库。完整规则见 `SKILL.md` 第十三节。
+**本技能只在这四个位置放东西。** 临时文件放 `/tmp/jidou-<用途>/`，用完删；给用户的成品放 `/workspace` 或资料库。完整规则见 `SKILL.md` 第十三节。
 
 目录里出现的其他文件——`archive/` 里的旧快照、用户自己放进来的笔记、别的技能留下的产物——**不动也不清**，它们不是"多出来的"。
 
@@ -32,7 +32,7 @@ quicksave/
 
 ## 一、这个技能没有自己的脚本
 
-`quicksave` 目录下只有 Markdown，没有 `.py` 文件。它做的所有事——建表、写记录、查线索、建任务、生成档案——都调用 **library 技能**里已有的官方脚本。
+`jidou` 目录下只有 Markdown，没有 `.py` 文件。它做的所有事——建表、写记录、查线索、建任务、生成档案——都调用 **library 技能**里已有的官方脚本。
 
 这不影响使用，也不需要把脚本复制过来。**复制反而有害**：脚本由平台随版本更新，副本一旦分叉，就会出现"照着旧逻辑跑新接口"的静默错误。缺什么就调什么，永远用当前版本。
 
@@ -42,7 +42,7 @@ quicksave/
 
 | 脚本 | 用途 | 什么时候调用 |
 |---|---|---|
-| `space_api.py` | 列空间、列目录、查节点信息 | 每次定位速记箱 |
+| `space_api.py` | 列空间、列目录、查节点信息 | 每次定位记兜 |
 | `database/create_database_with_records.py` | 建表 + 写入首条记录 | 仅首次，表不存在时 |
 | `database/batch_add_database_records.py` | 批量追加记录 | 每次记录想法 |
 | `database/batch_update_database_records.py` | 更新记录字段 | 推进状态时 |
@@ -56,17 +56,17 @@ quicksave/
 
 ## 二点五、云端凭证
 
-「速记箱」目录下有一份文档「速记箱·配置」，是"已装好"的唯一凭证，记着 `database_id`、任务 ID、schema 版本、初始化方式。
+「记兜」目录下有一份文档「记兜·配置」，是"已装好"的唯一凭证，记着 `database_id`、任务 ID、schema 版本、初始化方式。
 
 **换设备、换执行环境、换账号后，先读它再决定要不要初始化。** 没有它，判断"是不是第一次"只能靠猜，而本地探测永远返回"第一次"——这正是重复建表的根源。
 
 ```bash
-# 先看根目录有没有「速记箱」目录（列根目录不传 --parent-node-id），再往里找配置文档
+# 先看根目录有没有「记兜」目录（列根目录不传 --parent-node-id），再往里找配置文档
 cd "$LIB" && python3 space_api.py space.workspace.list-nodes --space-id "<spaceId>" --limit 100
-cd "$LIB" && python3 space_api.py space.workspace.list-nodes --space-id "<spaceId>" --parent-node-id "<速记箱目录 id>" --limit 100
+cd "$LIB" && python3 space_api.py space.workspace.list-nodes --space-id "<spaceId>" --parent-node-id "<记兜目录 id>" --limit 100
 ```
 
-按标题匹配 `速记箱·配置`，读 `database_id` 后用 `node-info` 验一次还活着。两个都对上，就直接用，一个问题都不要问用户。标题搜不到时按标题在子目录里再找一遍——目录位置会变，标题不会。
+按标题匹配 `记兜·配置`，读 `database_id` 后用 `node-info` 验一次还活着。两个都对上，就直接用，一个问题都不要问用户。标题搜不到时按标题在子目录里再找一遍——目录位置会变，标题不会。
 
 ## 三、数据落点
 
@@ -77,12 +77,12 @@ cd "$LIB" && python3 space_api.py space.workspace.list-nodes --space-id "<spaceI
 | 要什么 | 从哪取 |
 |---|---|
 | `spaceId` | `list-user-spaces`，取 `category=personal` 那条。个人空间只有一个，这是唯一可以视作稳定的值 |
-| `folder_id` | 配置文档的 `folder_id`；没有就按标题「速记箱」搜 `kind=folder` |
+| `folder_id` | 配置文档的 `folder_id`；没有就按标题「记兜」搜 `kind=folder` |
 | `database_id` | 配置文档的 `database_id`，再 `node-info` 验 `data.node.kind == database` |
-| `config_doc` | 同目录下标题「速记箱·配置」，`kind=doc` |
+| `config_doc` | 同目录下标题「记兜·配置」，`kind=doc` |
 | `url` | `node-info` 返回的 `url`，别自己拼 |
 
-上表用到的命令，一条都不在本文件重抄：`list-user-spaces` / `list-nodes` / `node-info` 在 `SKILL.md` 第零节的定位步骤里，`scheduler list --keyword 速记提醒` 在 `SKILL.md` 第六节末。**命令只有一处，这里是"该取哪五个值"的清单**，两件事别混。
+上表用到的命令，一条都不在本文件重抄：`list-user-spaces` / `list-nodes` / `node-info` 在 `SKILL.md` 第零节的定位步骤里，`scheduler list --keyword 记兜提醒` 在 `SKILL.md` 第六节末。**命令只有一处，这里是"该取哪五个值"的清单**，两件事别混。
 
 **为什么连"当前快照"都不留**：留了就会有人抄。抄的那一刻不报错，因为他抄的正好还是对的；等他下次来，表已经重建了，而文档没人改。所以正确的做法是让这段文字**没有可抄的东西**。
 
@@ -98,7 +98,7 @@ cd "$LIB" && python3 database/get_database_schema.py --database-id "<database_id
 
 ## 三之二、提醒任务
 
-任务**名字固定**叫「速记提醒」，靠这个名字匹配，改名会导致重复建。任务 ID 唯一取法是 `scheduler-api.sh list --keyword "速记提醒"`，不要抄文档。
+新任务**名字固定**叫「记兜提醒」。已有安装优先回读配置里的 `task_id_reminder`；没有有效 ID 时按此名称查找，并按 `upgrade.md`「记兜命名升级」兼容旧名，避免重复建。不要抄实例任务 ID。
 
 **cron、时区、超时、重试、指令怎么填——参数表在 `SKILL.md` 第六节末，本文件不重列。** 那份表是唯一权威：建任务时照它填，改频率时也照它判断代价（小时级提前量会退化）。这里重复一份，就会出现"文档说每小时、实际跑的是别的"这种谁也说不清的情况。
 
@@ -119,7 +119,7 @@ cd "$LIB" && python3 database/get_database_schema.py --database-id "<database_id
 3. **`select` 字段传选项文字即可**，如 `{"select": "想法"}`，不必先查选项 ID；日期传 `yyyy-mm-dd`，存储会自动补成 ISO 时间。
 4. **date 字段能存到分钟，但只显示到日期。** 写入 `2026-11-05T19:30:00+08:00` 会被存成 `2026-11-05T11:30:00Z`（UTC），时间精度完整保留，用于计算没问题；表格界面上只显示 `2026-11-05`。所以时间要靠「内容」给用户看，别指望列里显示。
 5. **农历换算用 `lunardate`**，执行环境已带（`zhdate` 没有）。`LunarDate(年, 月, 日).toSolarDate()`，注意农历年的公历落点每年都不同，不能存成固定月日。
-6. **定时任务跑在独立的执行环境里，看不到当前会话的本地文件。** 实测：任务里 `touch /workspace/cron-probe.txt` 完全没留下文件，但同一条任务写回速记箱却成功了。所以「执行内容」只能写自给自足的命令——依赖 library 脚本、HTTP 请求、资料库数据，都可以；依赖 `~/scripts/xxx.sh` 或上次留下的临时文件，不行。
+6. **定时任务跑在独立的执行环境里，看不到当前会话的本地文件。** 实测：任务里 `touch /workspace/cron-probe.txt` 完全没留下文件，但同一条任务写回记兜却成功了。所以「执行内容」只能写自给自足的命令——依赖 library 脚本、HTTP 请求、资料库数据，都可以；依赖 `~/scripts/xxx.sh` 或上次留下的临时文件，不行。
 7. **执行完成到能查到回执有延迟，最长见过 3 分钟。** 一条 18:34 触发的任务，18:37 查还没有记录，18:44 查到了，内容里的时间戳是 18:34:57——说明执行本身很快，慢在启动与落库。**验证新任务至少等 5 分钟再判成败**，否则会误判成失败。
 8. **`lastRunAt` 有值不等于执行成功。** 它只代表调度器拉起过。唯一可信的成功证据是「上次结果」字段被写入了。查任务状态时先看这个字段，别只看 `lastRunAt`。
 9. **`node-info` 的 kind 在 `data.node.kind`，不是 `data.kind`。** 写错层级不报错，只会永远判成"表不存在"，接着去建第二张表。已实测正确路径返回 `kind=database`。
@@ -131,7 +131,7 @@ cd "$LIB" && python3 database/get_database_schema.py --database-id "<database_id
 ### 1. 换设备
 
 1. 确认目标设备上有 library 技能（平台内置，通常自带）
-2. 把 `SKILL.md` 和 `references/` 放回 `<技能根目录>/quicksave/`
+2. 把 `SKILL.md` 和 `references/` 放回 `<技能根目录>/jidou/`
 3. **不需要重建表格**——数据在云端，同一账号登录后 `database_id` 不变
 4. 如果换了账号，表不在，按 `bootstrap.md` 重建。**新 `database_id` 只回填到配置文档和任务指令，不回填到任何 Markdown**——本技能刻意不让文档持有实例值，见第三节
 5. 换设备后第一件事是读配置文档确认装过，不要重跑初始化
@@ -152,7 +152,7 @@ cd "$LIB" && python3 database/get_database_schema.py --database-id "<database_id
 
 所以任务指令必须**自包含**：表 ID 写死在指令里，命令用绝对路径，结果写回表格而不是本地。
 
-实测证据：任务里 `touch /workspace/cron-probe.txt` 毫无痕迹，同一条任务写回速记箱却成功。
+实测证据：任务里 `touch /workspace/cron-probe.txt` 毫无痕迹，同一条任务写回记兜却成功。
 
 **任务里禁止做的事：** 建表、建任务、改表结构。后台无人值守，一旦判断错，第二天会多出几张空表。找不到表就结束并留一句话，等下次对话时人工修。
 

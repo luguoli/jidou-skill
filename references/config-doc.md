@@ -1,4 +1,4 @@
-# 速记箱 · 配置
+# 记兜 · 配置
 
 **这份文档是「已经装好」的凭证。** 它存在，就说明表、字段、提醒任务都建过了。换设备、换执行环境、换 agent，读到它就直接用，不要重建、不要问、不要往本地写任何东西。
 
@@ -9,12 +9,12 @@
 | schema_version | __SCHEMA_VERSION__ |
 | space_id | __SPACE_ID__ |
 | database_id | __DATABASE_ID__ |
-| database_title | 速记箱 |
+| database_title | 记兜 |
 | folder_id | __FOLDER_ID__ |
 | folder_backup_id | __FOLDER_BACKUP_ID__ |
 | folder_archive_id | __FOLDER_ARCHIVE_ID__ |
 | task_id_reminder | __TASK_ID__ |
-| task_name_reminder | 速记提醒 |
+| task_name_reminder | 记兜提醒 |
 | initialized_at | __TODAY__ |
 | init_mode | __INIT_MODE__ |
 | field_count | __FIELD_COUNT__ |
@@ -29,7 +29,7 @@
 
 ## 维护规则
 
-- **和速记箱表放在同一个目录里**（`速记箱/`），不要单独挪走，也不要放到根目录。
+- **和记兜表放在同一个目录里**（`记兜/`），不要单独挪走，也不要放到根目录。
 - **不要删这份文档。** 删了不会立刻出事，但下次换环境时系统会以为从没装过，可能重复建表。
 - 改了表结构（加字段、改选项）→ 更新 `schema_version` 和 `field_count`。
 - 重建了表 → 更新 `database_id` 和 `initialized_at`，`init_mode` 写清是"重建"还是"迁移"。

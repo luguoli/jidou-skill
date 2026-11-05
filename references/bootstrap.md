@@ -2,13 +2,13 @@
 
 > ⛔ **这份文件只有在用户明确回答"第一次用，建吧"之后才执行。**
 >
-> 判断依据是 `first-run.md` 的「三查一问」：配置文档 → 「速记箱」表 → 全空间标题搜索，三查全落空才问用户。**三查里任意一查命中，都不是初始化，是补缺**——别跑本文件。
+> 判断依据是 `first-run.md` 的「三查一问」：配置文档 → 「记兜」表 → 全空间标题搜索，三查全落空才问用户。**三查里任意一查命中，都不是初始化，是补缺**——别跑本文件。
 >
 > 三查全空，才轮到你问。问了、用户说"建"，才从头往下走。
 >
 > **不许把"我判断是空的"当成"用户同意建"。** 建完还往凭证里写「用户确认新建」，等于伪造一条他没做过的授权——这是比不问更严重的事。
 
-新用户第一次用这个技能时，跑完这一份，得到的东西和作者当前的状态完全一致：一张表（21 字段）、一个每小时运行的提醒任务、一份配置凭证、一套目录（`速记箱/` 加两个子目录）。**具体是哪 21 个字段、哪两个子目录，这里不列**——字段在第四节 JSON 里，目录在 `SKILL.md` 第二节的规范表里。
+新用户第一次用这个技能时，跑完这一份，得到的东西和作者当前的状态完全一致：一张表（21 字段）、一个每小时运行的提醒任务、一份配置凭证、一套目录（`记兜/` 加两个子目录）。**具体是哪 21 个字段、哪两个子目录，这里不列**——字段在第四节 JSON 里，目录在 `SKILL.md` 第二节的规范表里。
 
 **目标是一次装好，不留下"以后再补"。** 全程只做加法，重复执行不会产生第二张表、第二个任务或第二份凭证。
 
@@ -40,10 +40,10 @@ LIB="$SKILLS/library"
 **同时确认技能目录结构在。** 目录不存在就建，顺序固定：
 
 ```bash
-QS="$SKILLS/quicksave"
+JIDOU="$SKILLS/jidou"
 ATM="$SKILLS/automation-task-manager"
 
-mkdir -p "$QS/archive" "$QS/references"
+mkdir -p "$JIDOU/archive" "$JIDOU/references"
 ```
 
 目录里只放固定几样东西，规则见 `SKILL.md` 第十三节。**不要在这里生成任何临时文件**，初始化不该留下痕迹。
@@ -56,13 +56,13 @@ cd "$LIB" && python3 space_api.py space.workspace.list-user-spaces --limit 100
 
 取 `category == "personal"` 那条的 `spaceId`。正常只有一个；出现多个时问用户用哪个，不要猜。
 
-## 三、查速记箱是否已存在
+## 三、查记兜是否已存在
 
 ```bash
 cd "$LIB" && python3 space_api.py space.workspace.list-nodes --space-id "<spaceId>" --limit 100
 ```
 
-在 `data.nodes[]` 里找 `title == "速记箱"` 且 `kind == "database"`。
+在 `data.nodes[]` 里找 `title == "记兜"` 且 `kind == "database"`。
 
 - 找到 → 记下 `id`，跳到第五节
 - 没找到 → 继续第四节
@@ -70,13 +70,13 @@ cd "$LIB" && python3 space_api.py space.workspace.list-nodes --space-id "<spaceI
 
 ## 四、建表
 
-先准备目录：根目录 `list-nodes` 找 `kind == "folder"` 且标题为「速记箱」的节点，没有就 `manage/create_folder.py --title "速记箱"` 建一个，把 id 填进下面 JSON 的 `parent_id`。**表不建在根目录**，否则根目录会越用越乱。
+先准备目录：根目录 `list-nodes` 找 `kind == "folder"` 且标题为「记兜」的节点，没有就 `manage/create_folder.py --title "记兜"` 建一个，把 id 填进下面 JSON 的 `parent_id`。**表不建在根目录**，否则根目录会越用越乱。
 
 再建两个子目录，**不是可选项**：
 
 ```bash
-cd "$LIB" && python3 manage/create_folder.py --title "备份" --space-id "<spaceId>" --parent-id "<速记箱目录 id>"
-cd "$LIB" && python3 manage/create_folder.py --title "自动化任务归档" --space-id "<spaceId>" --parent-id "<速记箱目录 id>"
+cd "$LIB" && python3 manage/create_folder.py --title "备份" --space-id "<spaceId>" --parent-id "<记兜目录 id>"
+cd "$LIB" && python3 manage/create_folder.py --title "自动化任务归档" --space-id "<spaceId>" --parent-id "<记兜目录 id>"
 ```
 
 漏了这两个，`SKILL.md` 第二节规定的落点就无处可落：导出 CSV 只能塞根目录，跑批中间文件也一样。规范写了落点、实际没有目录，等于没规范。建完把两个 id 记下来，**填进配置凭证的 `folder_backup_id` / `folder_archive_id`**（见第六点五节），建执行类任务时要写进指令。
@@ -86,9 +86,9 @@ cd "$LIB" && python3 manage/create_folder.py --title "自动化任务归档" --s
 ```bash
 printf '%s' '{
   "schema": {
-    "title": "速记箱",
+    "title": "记兜",
     "space_id": "<spaceId>",
-    "parent_id": "<速记箱目录 id>",
+    "parent_id": "<记兜目录 id>",
     "properties": [
       { "name": "内容", "config": { "text": "" } },
       { "name": "类型", "config": { "select": { "options": [
@@ -140,7 +140,7 @@ printf '%s' '{
 ## 五、查提醒任务是否存在
 
 ```bash
-cd "$ATM" && ./scripts/scheduler-api.sh list --keyword "速记提醒"
+cd "$ATM" && ./scripts/scheduler-api.sh list --keyword "记兜提醒"
 ```
 
 看返回的 `data.tasks[]`：
@@ -155,23 +155,23 @@ cd "$ATM" && ./scripts/scheduler-api.sh list --keyword "速记提醒"
 
 ```bash
 # 临时文件放独立目录，用完删，不要落在技能目录里
-mkdir -p /tmp/qs-task
+mkdir -p /tmp/jidou-task
 sed -e "s|__DATABASE_ID__|<database_id>|g" \
     -e "s|__SKILLS_DIR__|$SKILLS|g" \
-    "$QS/references/reminder-prompt.md" > /tmp/qs-task/reminder.txt
+    "$JIDOU/references/reminder-prompt.md" > /tmp/jidou-task/reminder.txt
 
 # 三道校验，缺一不可。任何一道不过就停，不要"先建了再说"
-grep -q "__" /tmp/qs-task/reminder.txt && { echo "占位符没替换完，停"; exit 1; }
+grep -q "__" /tmp/jidou-task/reminder.txt && { echo "占位符没替换完，停"; exit 1; }
 [ -d "$SKILLS/library" ] || { echo "脚本路径不存在：$SKILLS/library，停"; exit 1; }
-grep -q "database_id=<" /tmp/qs-task/reminder.txt && { echo "表 ID 没填，停"; exit 1; }
+grep -q "database_id=<" /tmp/jidou-task/reminder.txt && { echo "表 ID 没填，停"; exit 1; }
 
 cd "$ATM" && ./scripts/scheduler-api.sh create \
-  --name "速记提醒" \
+  --name "记兜提醒" \
   --cron "0 0 * * * *" \
-  --prompt "$(cat /tmp/qs-task/reminder.txt)" \
+  --prompt "$(cat /tmp/jidou-task/reminder.txt)" \
   --frequency-type "interval" \
   --timezone "Asia/Shanghai" \
-  --description "每小时扫描资料库速记箱，推送待办/循环任务/事件的到期提醒" \
+  --description "每小时扫描资料库记兜，推送待办/循环任务/事件的到期提醒" \
   --timeout 600 --retry-count 2
 ```
 
@@ -193,7 +193,7 @@ Cron `0 0 * * * *` 是六段格式（秒 分 时 日 月 周），含义是每�
 建完顺手清掉临时目录，别留在 /tmp 里累积：
 
 ```bash
-rm -rf /tmp/qs-task
+rm -rf /tmp/jidou-task
 ```
 
 **频率可以在初始化时按用户情况调整**：他说"不要每小时"就换成 `0 0 8,20 * * *`（每天 8 点和 20 点）或 `0 0 8 * * *`（每天 8 点）。默认每小时，因为小时级提前量（提前10分钟、提前1小时）只有在这个频率下才有意义。
@@ -202,34 +202,34 @@ rm -rf /tmp/qs-task
 
 **这一步不是可选的。** 没有凭证，下次换环境会被当成"第一次"，然后重复问用户、甚至重复建表。
 
-用 `references/config-doc.md` 作模板，替换占位符后建成文档，放在「速记箱」目录下（与表同目录；目录不存在就先建，见 SKILL.md 第二节）：
+用 `references/config-doc.md` 作模板，替换占位符后建成文档，放在「记兜」目录下（与表同目录；目录不存在就先建，见 SKILL.md 第二节）：
 
 ```bash
-# 先拿到「速记箱」目录的 id，没有就建一个。列根目录不要传 --parent-node-id，留空字符串有些实现会报参数错误
+# 先拿到「记兜」目录的 id，没有就建一个。列根目录不要传 --parent-node-id，留空字符串有些实现会报参数错误
 cd "$LIB" && python3 space_api.py space.workspace.list-nodes --space-id "<spaceId>" --limit 100
-cd "$LIB" && python3 manage/create_folder.py --title "速记箱" --space-id "<spaceId>"
+cd "$LIB" && python3 manage/create_folder.py --title "记兜" --space-id "<spaceId>"
 ```
 
 ```bash
-mkdir -p /tmp/qs-task
+mkdir -p /tmp/jidou-task
 sed -e "s|__SCHEMA_VERSION__|<SKILL.md 里的 version>|g" \
     -e "s|__SPACE_ID__|<spaceId>|g" \
     -e "s|__DATABASE_ID__|<database_id>|g" \
-    -e "s|__FOLDER_ID__|<速记箱目录 id>|g" \
-    -e "s|__FOLDER_BACKUP_ID__|<速记箱/备份 id>|g" \
-    -e "s|__FOLDER_ARCHIVE_ID__|<速记箱/自动化任务归档 id>|g" \
+    -e "s|__FOLDER_ID__|<记兜目录 id>|g" \
+    -e "s|__FOLDER_BACKUP_ID__|<记兜/备份 id>|g" \
+    -e "s|__FOLDER_ARCHIVE_ID__|<记兜/自动化任务归档 id>|g" \
     -e "s|__TASK_ID__|<提醒任务 id>|g" \
     -e "s|__TODAY__|$(date +%F)|g" \
     -e "s|__INIT_MODE__|<首次使用，用户确认新建 / 迁移 / 重建 / 存量表，未询问>|g" \
     -e "s|__FIELD_COUNT__|21|g" \
-    "$QS/references/config-doc.md" > /tmp/qs-task/config.md
+    "$JIDOU/references/config-doc.md" > /tmp/jidou-task/config.md
 
-grep -q "__" /tmp/qs-task/config.md && { echo "占位符没替换完，停"; exit 1; }
+grep -q "__" /tmp/jidou-task/config.md && { echo "占位符没替换完，停"; exit 1; }
 
 cd "$LIB" && python3 doc/create_doc.py \
-  --title "速记箱·配置" --space-id "<spaceId>" --parent-id "<速记箱目录 id>" \
-  --content-file /tmp/qs-task/config.md
-rm -rf /tmp/qs-task
+  --title "记兜·配置" --space-id "<spaceId>" --parent-id "<记兜目录 id>" \
+  --content-file /tmp/jidou-task/config.md
+rm -rf /tmp/jidou-task
 ```
 
 **`init_mode` 必须如实写**：用户说是第一次就写「首次使用，用户确认新建」；从旧空间搬过来写「迁移，来自原空间 xxx」；旧表删了重建写「重建，旧表已删（用户确认）」。这一栏决定下次要不要再问。
@@ -244,7 +244,7 @@ init_mode = 存量表，未询问（凭证于 <日期> 补写）
 
 并在当次对话里主动说明一句。存量是既成事实，补凭证是为了下次不再误判；主动告知是为了不让它悄悄变成默认动作。
 
-写完回读一次，确认三件事：标题是「速记箱·配置」、`database_id` 与真实表一致、没有 `__` 残留。
+写完回读一次，确认三件事：标题是「记兜·配置」、`database_id` 与真实表一致、没有 `__` 残留。
 
 **顺序不能反。** 先建表建任务，最后写凭证；写到一半失败就当没写，不要留一份空的凭证——空凭证比没有更糟，会让下次误判成"已装好"却找不到表。
 
@@ -262,7 +262,7 @@ init_mode = 存量表，未询问（凭证于 <日期> 补写）
 
 ## 七点五、执行类任务不预建
 
-初始化只建**一个**任务：每小时扫表的「速记提醒」。
+初始化只建**一个**任务：每小时扫表的「记兜提醒」。
 
 脚本、API、技能这类**定时执行任务不预建**，它们由用户提出需求时逐个创建。原因很实在：不知道要跑什么，没法预建；预建一堆空任务只会占用额度、拉长列表。
 
@@ -275,9 +275,9 @@ init_mode = 存量表，未询问（凭证于 <日期> 补写）
 | 检查项 | 已存在时的处理 |
 |---|---|
 | 个人空间 | 复用，不新建 |
-| 速记箱目录 | 复用，不建第二个同名目录 |
-| 速记箱/备份、速记箱/自动化任务归档 | 逐个 `list-nodes` 看，缺哪个补哪个。**这两个不建，产物就无处可落** |
-| 速记箱表 | 复用现有 ID，不建第二张 |
+| 记兜目录 | 复用，不建第二个同名目录 |
+| 记兜/备份、记兜/自动化任务归档 | 逐个 `list-nodes` 看，缺哪个补哪个。**这两个不建，产物就无处可落** |
+| 记兜表 | 复用现有 ID，不建第二张 |
 | 21 个字段 | 缺哪个补哪个，用 `add_database_field.py`；已有的不动 |
 | 选项 | 缺失的追加，已有的保留原 ID，绝不重建整个 select。领域要确认是 6 项、类型 10 项、执行 5 项 |
 | 提醒任务 | 按名称 + status 判断，启用或跳过，不重复建 |
@@ -287,10 +287,10 @@ init_mode = 存量表，未询问（凭证于 <日期> 补写）
 
 ## 九、初始化后，自己产生的临时文件要清掉
 
-初始化会写几份临时文件（`/tmp/qs-task/`、`schema.json`、替换好占位符的 `config.md`）。**这些用完就删**，`/tmp/qs-*` 是主要来源——执行环境可能被复用，留着会混进下一次执行，下次读到旧表 ID 会直接失败。
+初始化会写几份临时文件（`/tmp/jidou-task/`、`schema.json`、替换好占位符的 `config.md`）。**这些用完就删**，`/tmp/jidou-*` 是主要来源——执行环境可能被复用，留着会混进下一次执行，下次读到旧表 ID 会直接失败。
 
 ```
-<技能根目录>/quicksave/
+<技能根目录>/jidou/
 ├── SKILL.md
 ├── CHANGELOG.md
 ├── references/      已有文档，初始化不新增

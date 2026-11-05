@@ -1,4 +1,4 @@
-# 随手记 · Quick Save
+# 记兜 · jidou
 
 把聊天里随手扔过来的一句话接住、归类、存进一张表，需要的时候能翻回来。
 
@@ -28,10 +28,12 @@
 复制整个目录到技能目录即可：
 
 ```bash
-git clone https://github.com/<owner>/quicksave.git ~/.codebuddy/skills/quicksave
+git clone https://github.com/luguoli/jidou-skill.git ~/.codebuddy/skills/jidou
 ```
 
 **首次运行不会自动建任何东西。** 技能会先跟你确认，你点头之后才建表、建定时任务、写配置凭证。装完会展示完整功能清单和使用示例。
+
+已有安装升级时，先按 [升级说明](references/upgrade.md#记兜命名升级) 接回原有表、配置和提醒任务，避免重复初始化。
 
 ## 依赖
 
@@ -102,7 +104,7 @@ git clone https://github.com/<owner>/quicksave.git ~/.codebuddy/skills/quicksave
 ## 文件结构
 
 ```text
-quicksave/
+jidou/
 ├── SKILL.md                主流程，零到十五章
 ├── CHANGELOG.md            版本变更，记录每次为什么改
 └── references/
@@ -122,13 +124,13 @@ quicksave/
 ## 边界
 
 - **不主动创建任何东西**，除非用户先确认
-- **不管别人的内容**，只动自己产出的 `速记箱/`、`skills/`、`敏感配置/`
+- **不管别人的内容**，只动自己产出的 `记兜/`、`skills/`、`敏感配置/`
 - **不猜**：拿不准就问一句，猜错比多问一句贵得多
 - **不因为缺字段就不存**：来源不知道就留空，回头补
 
 ## 版本
 
-当前 `2.11.0`。变更理由都在 [CHANGELOG.md](CHANGELOG.md)，包含每一次被用户指出问题后的修正。
+当前 `2.11.1`。变更理由都在 [CHANGELOG.md](CHANGELOG.md)，包含每一次被用户指出问题后的修正。
 
 ## License
 

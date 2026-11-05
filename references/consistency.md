@@ -19,7 +19,7 @@
 | 首次判断的顺序与提问话术 | `first-run.md` 第一、二节 | SKILL 一句话说顺序 + 门禁；bootstrap 指过去，不抄话术 |
 | 提醒任务的判断算法 | `reminder-prompt.md` | SKILL 第六节末只写三行摘要（触发点 / 提前量 / 落区间），不复述全文 |
 | 提醒任务本身的参数（cron、时区、超时、重试） | `SKILL.md` 第六节末那张表 | `dependencies.md` 不重复列；表里的值必须与 `scheduler-api.sh get` 的实测一致 |
-| 目录规范（`速记箱/`、`备份/`、`自动化任务归档/`、`skills/`、`敏感配置/`） | `SKILL.md` 第二节 | bootstrap 只写"建哪两个目录"的执行动作；upgrade、dependencies 引用 |
+| 目录规范（`记兜/`、`备份/`、`自动化任务归档/`、`skills/`、`敏感配置/`） | `SKILL.md` 第二节 | bootstrap 只写"建哪两个目录"的执行动作；upgrade、dependencies 引用 |
 | 配置凭证的键 | `config-doc.md` 模板 | SKILL 零节只列键名，不列值 |
 | 备份 / 回滚命令 | `upgrade.md` 第三节（备份）、第五节（回滚） | SKILL 第十五节只指过去，不贴命令 |
 | 版本号怎么定、三条铁律 | `upgrade.md` 第一、二节 | SKILL 第十五节只写铁律名字和"何时必须先问"，不重复规则 |
@@ -38,12 +38,12 @@
 
 ## 二、改完必跑的检查
 
-全部在 `/tmp/qs-check/` 里跑，跑完删。**不要放进技能目录**——第十三节只允许那四类东西。
+全部在 `/tmp/jidou-check/` 里跑，跑完删。**不要放进技能目录**——第十三节只允许那四类东西。
 
 ### 1. 字段与枚举：唯一权威 + 各副本一致
 
 ```bash
-mkdir -p /tmp/qs-check && cd /root/.codebuddy/skills/quicksave && python3 - <<'PY'
+mkdir -p /tmp/jidou-check && cd /root/.codebuddy/skills/jidou && python3 - <<'PY'
 import re,os
 rd=lambda p:open(p,encoding='utf-8').read()
 F="内容 类型 标签 线索 记录时间 状态 到期 提醒 重复 下次触发 静音至 完成于 执行 执行内容 任务ID 上次结果 领域 优先级 相关人 来源".split()
@@ -80,7 +80,7 @@ PY
 ### 2. 还有没有第三份清单
 
 ```bash
-cd /root/.codebuddy/skills/quicksave && python3 - <<'PY'
+cd /root/.codebuddy/skills/jidou && python3 - <<'PY'
 import re,os
 # 每个文件允许出现的清单份数上限，超出就是又抄了一份
 cap={'SKILL.md':1,'references/reminder-prompt.md':1,'references/onboarding.md':2}
@@ -111,7 +111,7 @@ PY
 ### 3. 占位符覆盖
 
 ```bash
-cd /root/.codebuddy/skills/quicksave && python3 - <<'PY'
+cd /root/.codebuddy/skills/jidou && python3 - <<'PY'
 import re
 b=open('references/bootstrap.md',encoding='utf-8').read()
 sed=set(re.findall(r's\|(__[A-Z_]+__)\|',b))
@@ -126,7 +126,7 @@ PY
 ### 4. 交叉引用逐条核对
 
 ```bash
-cd /root/.codebuddy/skills/quicksave && grep -rn "第[一二三四五六七八九十零]\{1,3\}节\|references/[a-z-]*\.md" --include=*.md . | grep -v "^./archive/"
+cd /root/.codebuddy/skills/jidou && grep -rn "第[一二三四五六七八九十零]\{1,3\}节\|references/[a-z-]*\.md" --include=*.md . | grep -v "^./archive/"
 ```
 
 输出要逐条看，核两件：
@@ -137,7 +137,7 @@ cd /root/.codebuddy/skills/quicksave && grep -rn "第[一二三四五六七八�
 ### 5. 章节清单
 
 ```bash
-cd /root/.codebuddy/skills/quicksave && grep -n "^## " SKILL.md
+cd /root/.codebuddy/skills/jidou && grep -n "^## " SKILL.md
 ```
 
 应始终是 **零到十五，共 16 节**。加节要同时改：本节号之后所有引用、`dependencies.md` 的主流程说明、`portability.md` 的平台相关点表。
@@ -147,7 +147,7 @@ cd /root/.codebuddy/skills/quicksave && grep -n "^## " SKILL.md
 **不能直接 `grep 三级`。** 这个词有两个无关用法：「按规模分三级」讲的是分表策略，`folder_archive_id` 里也含着 `_archive` 这串字符。裸查会报一堆假警，假警多了这条检查就废了。所以带上下文查：
 
 ```bash
-cd /root/.codebuddy/skills/quicksave && for k in "三级全空" "四级全空" "三级里" "分四级" "三样东西" "已知位置" "已归档" "未确认，自动创建"; do echo "== $k"; grep -rn "$k" --include=*.md . | grep -v "^./archive/" | grep -v "^./CHANGELOG.md" | grep -v "^./references/consistency.md" | grep -v "别写成\|不要写成\|旧名\|旧版本\|曾经\|历史\|禁词\|只该"; done
+cd /root/.codebuddy/skills/jidou && for k in "三级全空" "四级全空" "三级里" "分四级" "三样东西" "已知位置" "已归档" "未确认，自动创建"; do echo "== $k"; grep -rn "$k" --include=*.md . | grep -v "^./archive/" | grep -v "^./CHANGELOG.md" | grep -v "^./references/consistency.md" | grep -v "别写成\|不要写成\|旧名\|旧版本\|曾经\|历史\|禁词\|只该"; done
 echo "== _archive（须独立出现）"
 grep -rnE "(^|[^A-Za-z0-9_])_archive" --include=*.md . | grep -v "^./archive/" | grep -v "^./CHANGELOG.md" | grep -v "别写成\|不要写成\|不是 \`_archive\`\|旧版本\|禁词"
 ```
@@ -171,7 +171,7 @@ grep -rnE "(^|[^A-Za-z0-9_])_archive" --include=*.md . | grep -v "^./archive/" |
 ### 7. 实例值残留
 
 ```bash
-cd /root/.codebuddy/skills/quicksave && grep -rnE "\b[A-Za-z0-9]{20,24}\b" --include=*.md . | grep -v "^./archive/" | grep -v "^./CHANGELOG.md"
+cd /root/.codebuddy/skills/jidou && grep -rnE "\b[A-Za-z0-9]{20,24}\b" --include=*.md . | grep -v "^./archive/" | grep -v "^./CHANGELOG.md"
 ```
 
 命中应该是：示例占位符、`scheduler-api.sh` 这类命令名。**出现 spaceId、database_id、folder_id、任务 ID、字段 ID 就是错的**——它们只该存在于云端配置文档和任务指令里。
@@ -192,7 +192,7 @@ cd "$LIB" && python3 database/get_database_schema.py --database-id <database_id>
 
 # 目录结构：与规范比
 cd "$LIB" && python3 space_api.py space.workspace.list-nodes --space-id <spaceId> --limit 100
-cd "$LIB" && python3 space_api.py space.workspace.list-nodes --space-id <spaceId> --parent-node-id <速记箱目录 id> --limit 100
+cd "$LIB" && python3 space_api.py space.workspace.list-nodes --space-id <spaceId> --parent-node-id <记兜目录 id> --limit 100
 ```
 
 **为什么单独列一项：** 2.10.4 就是这样查出错的。参数表写"超时 300 秒"，运行中的任务是 600——文档内部完全自洽，前七项全过，因为错的东西不在文档里。而参数表被定为"唯一权威"，写错意味着将来重建会建出一个和现役不同的任务，且无人察觉。
@@ -202,7 +202,7 @@ cd "$LIB" && python3 space_api.py space.workspace.list-nodes --space-id <spaceId
 ### 9. 结构与存档
 
 ```bash
-cd /root/.codebuddy/skills/quicksave && python3 -c "
+cd /root/.codebuddy/skills/jidou && python3 -c "
 import yaml,re,os
 s=open('SKILL.md',encoding='utf-8').read()
 print('YAML', yaml.safe_load(s.split('---')[1])['version'])
@@ -222,7 +222,7 @@ print('章节', len(re.findall(r'^## ',s,re.M)))
 
 1. **改数不改表。** 字段从 18 加到 21，正文写"21 个"，但某处表格还是 18 行，或建表 `sed` 里 `__FIELD_COUNT__` 还是 18。→ 数字跟着表走，表是源。
 2. **改表不改引用。** 新增一节，后面所有节号平移一位，但 `portability.md` 里"第十二节"没动。→ 加节后必跑检查 4。
-3. **加规则不加出路。** 规定"产物落 `速记箱/备份/`"，但初始化没建这个目录。→ 每条落点规则，都要能在 bootstrap 里找到对应的建目录动作。
+3. **加规则不加出路。** 规定"产物落 `记兜/备份/`"，但初始化没建这个目录。→ 每条落点规则，都要能在 bootstrap 里找到对应的建目录动作。
 4. **怕漏就再抄一遍。** 明明已有权威处，为了"读着方便"再贴一份，还注明"以另一处为准"。→ 读者会读手边这份，不会去核对。**要么给指针，要么把这份删掉，没有第三种。**
 
 ## 四、检查不是每次都要全跑
