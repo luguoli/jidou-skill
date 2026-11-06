@@ -54,7 +54,7 @@ def install_agent(agent, scope='project', project=None, user_home=None, apply=Fa
     backup = None
     try:
         files = []
-        for top in ['SKILL.md', 'README.md', 'CHANGELOG.md', 'LICENSE', 'requirements.txt', 'references', 'scripts', 'tests']:
+        for top in ['SKILL.md', 'README.md', 'README.en.md', 'CHANGELOG.md', 'LICENSE', 'requirements.txt', 'references', 'scripts', 'tests']:
             source = ROOT / top
             paths = source.rglob('*') if source.is_dir() else [source]
             for path in paths:

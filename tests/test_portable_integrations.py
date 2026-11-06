@@ -184,6 +184,14 @@ class InstallationTests(unittest.TestCase):
         self.command('install', '--agent', 'claude', '--scope', 'project', '--project', str(self.project), '--apply', ok=False)
         self.assertEqual((destination / 'user.txt').read_text(encoding='utf-8'), 'keep me')
 
+    def test_installed_english_package_has_no_broken_document_routes(self):
+        for agent in ['codex', 'claude', 'trae']:
+            with self.subTest(agent=agent):
+                report = self.command('install', '--agent', agent, '--scope', 'project', '--project', str(self.project), '--apply')
+                destination = Path(report['destination'])
+                checked = subprocess.run([sys.executable, str(destination / 'scripts/validate.py')], capture_output=True, text=True, encoding='utf-8')
+                self.assertEqual(checked.returncode, 0, checked.stdout + checked.stderr)
+
     def test_os_user_data_paths(self):
         root = Path(self.temp.name)
         self.assertEqual(default_home('darwin', {}, root), root / 'Library/Application Support/jidou')

@@ -1,5 +1,7 @@
 # 安装指南
 
+**简体中文** | [English](install.en.md)
+
 **不限平台，不限 Agent。支持标准 Agent Skills 格式，就可以按同一套方法加载记兜。**
 
 记兜使用 [Agent Skills 开放格式](https://agentskills.io/home)。下文先给通用安装方法，再覆盖操作系统、执行环境和不同 Agent 的入口；没有列出名字的产品也按通用方法处理。具体客户端能运行在哪些系统，以该产品自身的支持范围为准。

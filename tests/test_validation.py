@@ -10,7 +10,7 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
-from render import RenderError, render
+from render import RenderError, render, version
 from validate import validate
 
 
@@ -23,6 +23,18 @@ def package_copy():
 
 
 class ValidationRegressionTests(unittest.TestCase):
+    def test_english_readme_version_drift_is_detected(self):
+        with package_copy() as root:
+            path = root / 'README.en.md'
+            path.write_text(path.read_text(encoding='utf-8').replace('**' + version(root) + '**', '**99.0.0**'), encoding='utf-8')
+            self.assertTrue(any('README.en.md' in error for error in validate(root)))
+
+    def test_english_readme_broken_link_is_detected(self):
+        with package_copy() as root:
+            path = root / 'README.en.md'
+            path.write_text(path.read_text(encoding='utf-8') + '\n[missing](missing-english-guide.md)\n', encoding='utf-8')
+            self.assertTrue(any('missing-english-guide.md' in error for error in validate(root)))
+
     def config(self, **changes):
         context = {'SPACE_ID': 'space', 'FOLDER_ID': 'folder', 'DATABASE_ID': 'db', 'TODAY': '2026-11-06', 'INIT_MODE': '测试'}
         context.update(changes)

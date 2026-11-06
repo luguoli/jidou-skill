@@ -45,6 +45,10 @@ def validate(root: Path = ROOT) -> list[str]:
     readme = (root / 'README.md').read_text(encoding='utf-8')
     if f'**{current}**' not in readme or 'https://github.com/luguoli/jidou-skill.git' not in readme or 'references/install.md' not in readme:
         errors.append('README version or installation name differs.')
+    readmes = sorted(root.glob('README*.md'))
+    for path in readmes:
+        if f'**{current}**' not in path.read_text(encoding='utf-8'):
+            errors.append(f'{path.name} version differs from metadata.')
     if len(skill.splitlines()) > 200:
         errors.append('SKILL.md exceeds the maintained 200-line entrypoint budget.')
     data = json.loads((root / 'references/schema.json').read_text(encoding='utf-8'))['schema']
@@ -67,7 +71,7 @@ def validate(root: Path = ROOT) -> list[str]:
     expected_rows = [(prop['name'], next(iter(prop['config']))) for prop in props]
     if rows != expected_rows:
         errors.append('Field semantics table names/types differ from schema order/types.')
-    for path in [root / 'SKILL.md', root / 'README.md', *(root / 'references').glob('*.md')]:
+    for path in [root / 'SKILL.md', *readmes, *(root / 'references').glob('*.md')]:
         text = path.read_text(encoding='utf-8')
         for raw in re.findall(r'\]\(([^)]+)\)', text):
             if '://' in raw:

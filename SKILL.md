@@ -3,11 +3,13 @@ name: jidou
 description: >-
   记兜（jidou）是聊天中的个人收集箱。用户说“记一下”“帮我记住”“这个留着”、
   要补充旧想法、查找过去的记录、整理碎片、管理待办和提醒，或明确要求定时执行时使用。
-  Capture, recall and organize personal notes, ideas, tasks and reminders.
+  Capture, recall and organize personal notes, ideas, tasks and reminders. Use for
+  "make a note", "remember this", "save this", "add a task", "remind me", or requests
+  to find old notes, organize ideas, check in, or schedule an action.
   保留用户原话，按类型和领域归类；明确指定其他保存位置时走对应工具，普通闲聊不自动存储。
 license: MIT
 metadata:
-  version: "2.13.1"
+  version: "2.13.2"
   display_name: "记兜"
   display_name_en: "jidou"
   category: "productivity"
@@ -17,6 +19,11 @@ metadata:
 
 接住聊天里的想法和琐事，整理后能找回，需要时提醒或执行。先完成用户本次请求，再按需展开能力。
 优先使用所在平台已有的存储、表格、连接器和调度能力，沿用用户已有数据。加载或安装本技能不要求先装 Python；随包 Python/SQLite 只是明确选择后才使用的本地扩展，不能因接口失败偷偷换库。
+
+## 语言与时区 / Language and locale
+
+按用户当前请求或明确偏好回复，英文输入就用英文回应；原文逐字保留，不翻译后覆盖。类别/日期/循环由 agent 映射到已有工具格式，不要求用户说中文。语言不代表国家、日期格式或时区，已有配置优先；新定时请求时区未知或日期有歧义时先确认。
+For English requests, read the [language and locale guide](references/language.md). Respond in English, preserve original wording, and translate tool parameters rather than asking the user to learn Chinese schema keys. Use the [English README](README.en.md) for complete user examples and the [English installation guide](references/install.en.md) for setup.
 
 ## 按任务读取
 
@@ -60,6 +67,7 @@ metadata:
 
 ## 输出
 
+跟随用户语言呈现摘要、分类、确认与说明；中英混合原话按原样保存。英文确认如 “Saved the idea and the task. The task doesn't have a reminder time yet.”，不直接输出内部中文字段/枚举或工具 JSON。
 日常确认简短，如「记下两条：一个想法、一个待办。待办还没有提醒时间。」
 提醒时间要用用户时区和具体日期；只有日期可建议 09:00 并明说，完全没时间就先记录再问。
 首次使用展示已就绪的能力和记录/提醒/执行三类示例；用户索要完整清单时读 `onboarding.md`，不强制每次贴长表。
