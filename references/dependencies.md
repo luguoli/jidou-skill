@@ -2,8 +2,9 @@
 
 ## 能力检查
 
-先识别用户已选后端。**本地模式**使用随包 `scripts/jidou.py` 与 SQLite，安装 Python 3.10+ 和 requirements.txt 后即可在有本机工具的 Agent 中操作；不要求外部 library。用 doctor 只读检查，用明确的 init 创建，完整操作见 [local-runtime.md](local-runtime.md)。本机通知与后台仍需单独准备，见 [install.md](install.md)。
-**下文接口表及云端配置用于云端模式**；已有实例沿用原 ID，不能把云端失败自动降级成本地新库。
+先接回已有存储，优先复用所在平台已连接的资料库、表格、连接器和调度工具。技能说明本身不依赖 Python；安装技能不自动授权新建数据库或系统任务。
+WorkBuddy 云端沿用原 library 云端表与 automation-task-manager；其他 Agent 使用其实际可用接口，核对21字段和时间语义，不能假设拥有 WorkBuddy 服务。工具不可用时说明受影响能力，不要求所有平台统一安装 Python，也不自动降级到本地新库。
+**可选本地扩展**才使用随包 `scripts/jidou.py`、Python 3.10+ 与 SQLite。用户明确选定后按 [local-runtime.md](local-runtime.md) 操作，本机后台见 [install.md](install.md)。
 
 | 能力 | 用途 | 不可用时 |
 |---|---|---|
@@ -12,10 +13,20 @@
 | 后台执行：工具、网络、必要凭据 | 调用 API、脚本、技能 | 保留需求，不能承诺到点执行；提醒本身也需要能读表的执行环境 |
 
 云端适配器是 `library` 与 `automation-task-manager`，并不随本仓库打包。安装本技能不等于这些依赖已存在。
-模板和包校验脚本另需 Python 3.10+、PyYAML 与可用的 IANA 时区数据，见 requirements.txt；这些辅助依赖不替代平台接口。缺失时先说明依赖问题，不能将渲染失败当作云端配置成功。
 先检查实际路径与各脚本 `--help`，再采用命令示例；服务响应结构与限制须现场核验。没有可用适配器时不要编造调用或将真实数据写入另一个未经选择的后端。
 
-## 当前适配器路径
+## Python 依赖检查发生在哪里
+
+| 操作 | 实际要求 |
+|---|---|
+| 读 SKILL.md、平台导入、手动复制包 | 不以 Python 为前置 |
+| 调用平台已有工具 | 按该工具的实际运行要求；工具自带脚本时检查其执行环境 |
+| 随包 render.py / validate.py | 执行位置需要 Python 3.10+、PyYAML 与可用 IANA 时区数据 |
+| 可选本地 CLI / 复制安装器 / 本机后台 | 执行该脚本的本机需要 Python 3.10+；本地核心使用标准库，农历计算另需 lunardate，Windows 时区数据使用 tzdata |
+
+requirements.txt 是随包脚本/开发的便利依赖清单，不是所有用户首次使用前必须安装的步骤。云端脚本检查云端解释器与依赖，不要求用户先在电脑上安装；也不假定平台一定预装 Python/PyYAML。仅执行一次操作时检查所需依赖，缺失则报告，不因读取记录自动安装或改环境。
+
+## 当前云端适配器路径
 
 ```bash
 SKILLS="${JIDOU_SKILL_ROOT:-${CODEBUDDY_SKILL_DIR:-$HOME/.codebuddy/skills}}"

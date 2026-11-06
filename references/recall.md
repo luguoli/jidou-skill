@@ -1,6 +1,6 @@
 # 回读、整理与复盘
 
-本地后端用 [local-runtime.md](local-runtime.md) 的 list/get；支持 query、domain/type/status/person/lineage 筛选与 limit/offset 分页。结构化筛选为字段完全匹配；相关人含多人的记录可用 query 搜索。query 搜内容、标签、相关人、来源，不默认搜原文。日期等其他条件在分页读取的候选中核对，不能声称首个页面就是全部。CLI 返回内部完整字段，用户回复只展示所需摘要。云端才采用下文的多表和 library 示例。
+优先查询用户已有的平台存储，下文多表与 library 示例用于云端方案；其他平台按实际过滤和分页契约回读。只有用户已选可选本地扩展才按 [local-runtime.md](local-runtime.md) 使用 list/get；不要为查询旧记录初始化新库。任何接口返回的原文与内部字段都不直接整份贴给用户。
 
 ## 查找
 

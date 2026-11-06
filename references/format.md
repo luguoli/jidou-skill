@@ -22,6 +22,6 @@ description: 在聊天中记录、检索、整理个人想法与待办。
 
 ## 怎么确认
 
-先安装 [requirements.txt](../requirements.txt)，运行 `python scripts/validate.py`。它使用真正的安全 YAML 解析器，检测语法错误、重复键、必填字段与版本，并检查 Markdown 引用和 schema 兼容性。
+本节是维护者的可选脚本校验，不是所有用户加载技能的前置。需要运行时，在实际开发环境检查 Python 3.10+ 与 PyYAML；可用 [requirements.txt](../requirements.txt) 安装随包脚本依赖，再运行 `python scripts/validate.py`。它使用真正的安全 YAML 解析器，检测语法错误、重复键、必填字段与版本，并检查 Markdown 引用和 schema 兼容性。
 测试包含破坏 YAML、替换等数量枚举、改字段类型、未替换任务 ID 和无效时区等反例，不只检查当前文件能通过。
 平台提供的官方技能校验器可进一步交叉验证。文件格式通过不表示对应平台的存储、调度和投递已经实测。

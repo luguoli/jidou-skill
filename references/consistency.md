@@ -13,6 +13,8 @@
 
 ## 离线检查
 
+以下用于维护者在开发环境检查技能包，不是所有用户安装/使用技能的步骤。平台已有工具优先复用，只有执行随包脚本才检查对应解释器与依赖。
+
 ```bash
 python3 -m pip install -r requirements.txt
 python3 scripts/validate.py
@@ -28,6 +30,8 @@ python3 -m unittest discover -s tests -v
 如有官方技能校验器可再运行，不能用本地字符串检查冒充平台实跑。
 
 ## 行为验收
+
+先核对路由：WorkBuddy 云端沿用原配置/表/任务；其他 Agent 先看已有工具。安装技能或云端工具失败不应触发本地 init/scheduler，不以用户电脑安装 Python 作为云端接入的门槛。仅用户明确选择独立本地存储才走 SQLite；CSV/Excel 导出不自动切换活动数据源。
 
 用合成对象或只读评审执行下列场景，不操作真实账号。本地可在隔离目录实跑；云端实际行为验证需要可用适配器。下表涉及多云表、任务 prompt 的条目用于云端；本地用队列状态与 job runs 核对等价结果。
 

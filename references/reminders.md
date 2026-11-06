@@ -1,6 +1,6 @@
 # 提醒管理
 
-先核对后端。下列时间语义两种模式通用；云端共享扫描规则见 [reminder-rules.md](reminder-rules.md)。本地使用 [local-runtime.md](local-runtime.md) 的持久队列与 [install.md](install.md) 的每分钟原生唤醒，不运行旧云端 prompt。排队与循环推进在本地同一事务内完成，实际外部投递仍不与数据库原子提交。只有明确启用后台并核验通道后才说提醒已设置。
+先接回已有平台调度，WorkBuddy 云端规则见 [reminder-rules.md](reminder-rules.md)；下列时间语义也可供等价平台适配。只有用户已选可选本地扩展，才按 [local-runtime.md](local-runtime.md) 使用其队列与 [install.md](install.md#可选本机后台) 的原生唤醒；不为云端提醒注册用户电脑的任务。只有明确启用后台并核验通道后才说提醒已设置。
 
 ## 时间含义
 
