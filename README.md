@@ -1,8 +1,10 @@
-# 记兜 · jidou
+# 记兜 jidou · AI 笔记、待办清单与提醒 Agent Skill
 
 **聊天里的个人收集箱。随口记下，需要时找回。**
 
-想法、待办、参考资料、生活琐事，不必先想好放在哪个分类。告诉 AI 助手，记兜帮你记下来、理清楚，需要时再提醒你，或按约定执行任务。
+记兜（jidou）是一个用于 **AI 笔记、备忘录、待办清单、循环提醒和定时任务** 的 Agent Skill。直接在聊天中记录灵感、想法、参考资料和生活琐事，保留原话，按人、主题或时间找回，把零散记录整理成可回顾的个人知识库。
+
+An Agent Skill for AI note-taking, personal knowledge management, to-do lists, recurring reminders, and scheduled tasks.
 
 > 「记一下：周报能不能从聊天记录自动生成。」
 >
