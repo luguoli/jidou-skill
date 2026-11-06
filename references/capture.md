@@ -2,6 +2,8 @@
 
 先按 [first-run.md](first-run.md) 接回已有数据，并读取 [data-model.md](data-model.md)。需要提醒或执行时再读相应文档。
 
+本地后端按 [local-runtime.md](local-runtime.md) 使用 add/update/complete/skip/undo；云端才使用本页的 library 接口示例。记录与原文规则相同；本地循环完成必须指定 event-at，回执和模板推进在事务内完成，不手工双写模拟事务。
+
 ## 新记与拆条
 
 1. 确认存在记录意图；明确是随便聊天时不保存。

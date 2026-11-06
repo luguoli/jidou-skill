@@ -18,3 +18,10 @@ __pycache__/
 context*.json
 rendered/
 exports/
+
+# 本地数据和安装回执不进入技能源码
+*.sqlite3
+*.sqlite3-*
+*.db
+.jidou-install.json
+*.backup-*/

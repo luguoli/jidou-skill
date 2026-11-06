@@ -1,5 +1,7 @@
 # 初始化与补缺
 
+本页用于已明确选择的云端后端。本地 SQLite 初始化使用 [local-runtime.md](local-runtime.md) 的 init，不执行下列 library 建表或云端配置步骤。
+
 先完成 [first-run.md](first-run.md) 的定位。只有用户明确要求首次创建、提醒开通或本次修复时才执行相应步骤；不是每次记录都从头跑。
 
 ## 1. 检查适配器

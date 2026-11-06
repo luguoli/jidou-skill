@@ -8,5 +8,8 @@
     "quiet_start_hour": 22,
     "quiet_end_hour": 8,
     "catchup_hours": 24
+  },
+  "local": {
+    "poll_seconds": 60
   }
 }

@@ -43,7 +43,7 @@ def validate(root: Path = ROOT) -> list[str]:
     if re.search(r'^## (\d+\.\d+\.\d+)', changelog, re.M).group(1) != current:
         errors.append('Changelog latest version differs from metadata.')
     readme = (root / 'README.md').read_text(encoding='utf-8')
-    if f'**{current}**' not in readme or 'https://github.com/luguoli/jidou-skill.git ~/.codebuddy/skills/jidou' not in readme:
+    if f'**{current}**' not in readme or 'https://github.com/luguoli/jidou-skill.git' not in readme or 'install --agent codex' not in readme:
         errors.append('README version or installation name differs.')
     if len(skill.splitlines()) > 200:
         errors.append('SKILL.md exceeds the maintained 200-line entrypoint budget.')
