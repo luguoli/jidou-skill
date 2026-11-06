@@ -144,4 +144,4 @@ npx skills add luguoli/jidou-skill
 
 用你平时的表达即可，分类不对可以直接纠正。普通闲聊不会自动记入；明确说要保存到其他地方时，会尊重你指定的位置。
 
-版本 **2.14.1** · [MIT](LICENSE)
+版本 **2.14.2** · [MIT](LICENSE)

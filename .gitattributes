@@ -1,3 +1,4 @@
 # Development tests and local snapshots are not part of exported skill packages.
 /tests export-ignore
 /archive export-ignore
+/docs/plans export-ignore
