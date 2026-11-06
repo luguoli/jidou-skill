@@ -39,6 +39,27 @@ def quoted(name):
     return '"' + name.replace('"', '""') + '"'
 
 
+def calendar_date(value):
+    if not isinstance(value, str) or not re.fullmatch(r'\d{4}-\d{2}-\d{2}', value):
+        raise JidouError('Use a calendar date in YYYY-MM-DD format.')
+    try:
+        return date.fromisoformat(value)
+    except ValueError:
+        raise JidouError('Use a valid calendar date in YYYY-MM-DD format.') from None
+
+
+def capture_day(value, tz):
+    """Calendar-day view for queries; never fabricate a time for legacy dates."""
+    if not value:
+        return None
+    try:
+        if re.fullmatch(r'\d{4}-\d{2}-\d{2}', value):
+            return calendar_date(value).isoformat()
+        return instant(value).astimezone(tz).date().isoformat()
+    except (ValueError, OverflowError):
+        return None
+
+
 class Store:
     def __init__(self, home, now=None):
         self.home = Path(home).expanduser().resolve()
@@ -192,7 +213,7 @@ class Store:
             result[key] = value
         return result
 
-    def normalize(self, con, payload, old=None):
+    def normalize(self, con, payload, old=None, historical=False):
         values = self.unpack(payload)
         if old is None and '原文' not in values:
             raise JidouError('Provide 原文 explicitly; use an empty value only for system-generated records.')
@@ -206,8 +227,13 @@ class Store:
             raise JidouError('内容 must not be empty.')
         settings = self.config(con)
         tz = zone(settings['timezone'])
-        if not result['记录时间']:
-            result['记录时间'] = self.now.astimezone(tz).date().isoformat()
+        if not historical:
+            if old is None and not result['记录时间']:
+                result['记录时间'] = self.now.astimezone(tz).isoformat(timespec='seconds')
+            elif old is None or ('记录时间' in values and result['记录时间'] != old['记录时间']):
+                if not result['记录时间']:
+                    raise JidouError('Capture time cannot be cleared; an explicit correction needs an offset timestamp.')
+                result['记录时间'] = instant(result['记录时间']).isoformat(timespec='seconds')
         for key in ('到期', '下次触发', '静音至'):
             if result[key] and len(result[key]) == 10:
                 from .schedule import localize
@@ -291,11 +317,26 @@ class Store:
                 con.execute("UPDATE notifications SET status='cancelled' WHERE record_id=? AND status IN ('pending','claimed')", (record_id,))
             return self.save(con, record_id, fields)
 
-    def list(self, filters=None, query=None, limit=100, offset=0):
+    def list(self, filters=None, query=None, limit=100, offset=0, recorded_on=None, date_from=None, date_to=None, timezone_name=None):
         if not 1 <= limit <= 1000 or offset < 0:
             raise JidouError('Invalid pagination range.')
+        filters = dict(filters or {})
+        date_filter = filters.get('记录时间')
+        if isinstance(date_filter, str) and re.fullmatch(r'\d{4}-\d{2}-\d{2}', date_filter):
+            if any(value is not None for value in [recorded_on, date_from, date_to]):
+                raise JidouError('Use one capture-date selection, not conflicting date filters.')
+            recorded_on = filters.pop('记录时间')
+        if recorded_on is not None:
+            if date_from is not None or date_to is not None:
+                raise JidouError('--date cannot be combined with --from-date or --to-date.')
+            date_from = date_to = recorded_on
+        lower = calendar_date(date_from) if date_from is not None else date.min
+        upper = calendar_date(date_to) if date_to is not None else date.max
+        if lower > upper:
+            raise JidouError('The capture-date range starts after it ends.')
+        filtering_days = date_from is not None or date_to is not None
         clauses, params = [], []
-        for name, value in (filters or {}).items():
+        for name, value in filters.items():
             if name not in FIELDS:
                 raise JidouError('Unknown filter field.')
             clauses.append(quoted(name) + '=?')
@@ -304,8 +345,14 @@ class Store:
             pattern = '%' + query.replace('\\', '\\\\').replace('%', '\\%').replace('_', '\\_') + '%'
             clauses.append('(' + ' OR '.join(quoted(name) + " LIKE ? ESCAPE '\\'" for name in ['内容', '标签', '相关人', '来源']) + ')')
             params.extend([pattern] * 4)
-        where = ' WHERE ' + ' AND '.join(clauses) if clauses else ''
         with self.connection() as con:
+            if filtering_days or timezone_name is not None:
+                tz = zone(timezone_name if timezone_name is not None else self.config(con)['timezone'])
+            if filtering_days:
+                con.create_function('jidou_capture_day', 1, lambda value: capture_day(value, tz), deterministic=True)
+                clauses.append('jidou_capture_day("记录时间") BETWEEN ? AND ?')
+                params.extend([lower.isoformat(), upper.isoformat()])
+            where = ' WHERE ' + ' AND '.join(clauses) if clauses else ''
             total = con.execute('SELECT count(*) FROM records' + where, params).fetchone()[0]
             rows = con.execute('SELECT * FROM records' + where + ' ORDER BY created_at DESC,rowid DESC LIMIT ? OFFSET ?', [*params, limit, offset]).fetchall()
             return {'records': [self.record(row) for row in rows], 'total': total, 'limit': limit, 'offset': offset}
@@ -335,7 +382,7 @@ class Store:
                         raise JidouError('Invalid imported occurrence status.')
                     fields['上次结果'] = encode(marker)
                     receipts.append((row['id'], marker['template_record_id'], stamp(instant(marker['event_at'])), status))
-                records.append(self.insert(con, self.normalize(con, fields), row['id'], row.get('created_at'), row.get('updated_at')))
+                records.append(self.insert(con, self.normalize(con, fields, historical=True), row['id'], row.get('created_at'), row.get('updated_at')))
             for receipt in receipts:
                 self.get_in(con, receipt[1])
                 con.execute('INSERT INTO occurrences VALUES (?,?,?,?)', receipt)

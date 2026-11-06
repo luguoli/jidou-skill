@@ -127,6 +127,8 @@ Without Git, copy the extracted package manually. A shared `.agents/skills` conv
 
 ## After installation
 
+New notes retain the actual capture timestamp with an offset and second precision. Date-based searches use your configured local calendar day and include legacy date-only records without inventing a time. See [capture-time behavior](timestamps.md#english-capture-timestamps-and-calendar-date-search).
+
 1. Confirm discovery in the actual execution environment; reload the skill list, start a new session, or restart the client as required.
 2. Try “Make a note: I want to organize my desk this week.” Speak English; the assistant should reply in English and preserve your original words.
 3. Reuse the existing store. If storage is not connected, the assistant must say the note has not been saved, rather than creating a different store silently.

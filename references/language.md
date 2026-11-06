@@ -16,6 +16,8 @@ Example confirmation: “Saved the idea and the task. The task doesn’t have a 
 
 ## Dates and local time
 
+For new notes, capture time is the actual recording instant with an explicit offset and second precision. Preserve it on edits; imports keep legacy date-only/unknown precision. For “today/this week/last month”, follow [capture timestamps and calendar-date search](timestamps.md#english-capture-timestamps-and-calendar-date-search), not raw timestamp prefixes or date-string equality.
+
 Use the configured user timezone and a real current clock. Preserve existing preferences. For a new time-dependent setup without a known timezone, ask once before committing a schedule; do not silently accept Asia/Shanghai just because it is the package fallback, and do not assume English means a US timezone.
 
 - Convert explicit 12-hour times to 24-hour time internally: 3 p.m. → 15:00, 12 a.m. → 00:00, 12 p.m. → 12:00.
@@ -39,7 +41,7 @@ The existing 21-field contract is stable. The English labels below are an agent-
 | 类型 | Item type |
 | 标签 | Tags |
 | 线索 | Topic/thread identifier |
-| 记录时间 | Capture date |
+| 记录时间 | Actual capture timestamp with offset and second precision; legacy dates/unknowns retain original precision |
 | 状态 | Status |
 | 到期 | Actual due/event time |
 | 提醒 | Reminder lead selection |

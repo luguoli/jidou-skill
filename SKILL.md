@@ -9,7 +9,7 @@ description: >-
   保留用户原话，按类型和领域归类；明确指定其他保存位置时走对应工具，普通闲聊不自动存储。
 license: MIT
 metadata:
-  version: "2.13.2"
+  version: "2.14.0"
   display_name: "记兜"
   display_name_en: "jidou"
   category: "productivity"
@@ -36,6 +36,7 @@ For English requests, read the [language and locale guide](references/language.m
 | 已授权云端初始化 | [云端初始化](references/bootstrap.md)、[云端配置模板](references/config-doc.md) |
 | 用户明确选择本地独立存储/后台 | [可选本地扩展](references/local-runtime.md)、[本机后台安装](references/install.md#可选本机后台) |
 | 新记、拆条、补充、纠错、完成 | [记录与更新](references/capture.md)、[数据约定](references/data-model.md) |
+| 记录时刻、按天/周/月检索、旧日期兼容 | [记录时间与日期检索](references/timestamps.md) |
 | 查找、线索时间线、整理、复盘、打卡 | [回读与整理](references/recall.md) |
 | 提醒、循环、提前量、静音、改期 | [提醒管理](references/reminders.md) |
 | 定时跑脚本、调接口、监控、技能组合 | [定时执行](references/execution.md) |
@@ -61,6 +62,7 @@ For English requests, read the [language and locale guide](references/language.m
 - **敏感输入先处理。** 密码、密钥、证件号、银行卡号不进入任何字段，包括原文、日志和来源 URL。含这类内容的混合输入，先说明并取得去敏后的文本；不要一面拒存内容一面把秘密复制到原文。
 - **字段兼容。** 保留现有 21 个字段、名称、顺序及枚举。机器定义只在 [schema.json](references/schema.json)，语义在 `data-model.md`。缺字段时先核对授权和适配器，不因读取动作自动改表。
 - **记录状态独立。** 同一线索可以包含待办、决策和参考；完成一项不等于完成整条线索，不批量覆盖其他记录的状态。
+- **记录时间精确。** 新记录用真实时钟和用户时区保存带偏移、精确到秒的记录时刻，普通编辑不重置。按用户日历日检索新时间戳与旧日期，旧数据不补造时分秒；见 `timestamps.md`。
 - **提醒与执行分开。** 扫描只产生提醒；已明确配置的本地 argv 任务或云端任务才执行动作。登记实际任务 ID，用户停用的任务保持停用；原生命令托管字段用 job 控制，不靠改一段记录文字执行。
 - **授权按实际请求延续。** 记录请求授权写入已经接好的收集箱；首次创建存储/提醒基础设施由用户选择。之后的同类正常操作无需反复询问。整理或读表不意味着授权建任务、搬目录、删数据或自动升级。
 - **范围可验证。** 对象归属以配置 ID、创建回执和记录关联为依据；名称或文件名前缀相同不能单独证明归属。仅处理本次请求涉及的对象。

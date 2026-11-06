@@ -39,6 +39,9 @@ doctor 不创建目录、数据库或任务。只有 init 明确创建本地数�
 python scripts/jidou.py add --input /absolute/path/record.json --operation-id request-unique-id
 python scripts/jidou.py list --domain 工作 --status 待看 --limit 20 --offset 0
 python scripts/jidou.py list --query 周报
+python scripts/jidou.py list --date 2026-11-07
+python scripts/jidou.py list --from-date 2026-11-01 --to-date 2026-11-07
+python scripts/jidou.py list --date 2026-11-07 --timezone America/New_York
 python scripts/jidou.py get RECORD_ID
 python scripts/jidou.py update RECORD_ID --input /absolute/path/changes.json
 python scripts/jidou.py complete RECORD_ID
@@ -48,6 +51,7 @@ python scripts/jidou.py complete RECORD_ID
 批量写入用 `{"records":[记录1,记录2]}`，全批在一个事务内完成；一个不合法则全部回滚。同一 operation-id 重放相同载荷返回相同记录，不同载荷拒绝；不同操作不要复用同一个键。
 线索在写事务中分配，跨 agent 并发不会因先读后写而撞号。显式指定同一线索仍可关联多条独立记录，状态不联动。
 list 返回 total/limit/offset 与内部完整字段，逐页读取。普通检索回复不展示原文；用户明确追溯时才展示所需原话，不将完整 JSON 直接贴给用户。
+记录时间自动写用户时区的带偏移秒级时间戳；显式提供时必须带偏移，普通更新保留原时刻。历史导入保留纯日期/未知空值，不回填导入时间。日期筛选在 total/limit/offset 前完成，范围两端日期均包含，--date 不与范围混用，--timezone 不修改库设置；详见 [时间规范](timestamps.md)。
 
 ## 提醒
 

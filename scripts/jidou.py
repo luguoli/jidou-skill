@@ -45,6 +45,10 @@ def parser():
         listing.add_argument('--' + flag)
     listing.add_argument('--limit', type=int, default=100)
     listing.add_argument('--offset', type=int, default=0)
+    listing.add_argument('--date', help='Capture day (YYYY-MM-DD) in the configured user timezone.')
+    listing.add_argument('--from-date', help='First capture day, inclusive (YYYY-MM-DD).')
+    listing.add_argument('--to-date', help='Last capture day, inclusive (YYYY-MM-DD).')
+    listing.add_argument('--timezone', help='Read-only timezone override for capture-date filtering.')
     update = commands.add_parser('update')
     update.add_argument('id')
     update.add_argument('--input', required=True)
@@ -127,7 +131,7 @@ def main(argv=None):
             response = store.get(args.id)
         elif args.command == 'list':
             names = {'type': '类型', 'domain': '领域', 'status': '状态', 'lineage': '线索', 'person': '相关人'}
-            response = store.list({target: getattr(args, source) for source, target in names.items() if getattr(args, source)}, args.query, args.limit, args.offset)
+            response = store.list({target: getattr(args, source) for source, target in names.items() if getattr(args, source)}, args.query, args.limit, args.offset, recorded_on=args.date, date_from=args.from_date, date_to=args.to_date, timezone_name=args.timezone)
         elif args.command == 'update':
             response = store.update(args.id, read_json(args.input))
         elif args.command in {'complete', 'skip'}:
