@@ -18,6 +18,10 @@
 
 完整示例见 [使用说明](references/onboarding.md)。普通闲聊不自动保存，指定其他保存位置时尊重该位置。
 
+## 技能格式
+
+入口是 **SKILL.md：YAML 元数据头 + Markdown 正文**，这是标准结构。元数据有 YAML 不等于整个文件被改成 YAML，也不需要改成 `.yaml` 文件。详细约定见 [格式说明](references/format.md)。
+
 ## 安装与依赖
 
 将仓库放入所用加载器的技能目录，技能目录名使用 `jidou`。当前适配器常见安装方式：
@@ -46,15 +50,17 @@ jidou/
 └── tests/                   合成数据的离线测试
 ```
 
-运行时存储、查询和任务操作仍通过实际平台适配器。仓库脚本只负责渲染与校验，使用 Python 标准库，不携带平台 API 副本。
+运行时存储、查询和任务操作仍通过实际平台适配器。仓库脚本只负责渲染与校验，不携带平台 API 副本。
+脚本需要 Python 3.10+ 与 PyYAML，使用安全解析器读取 YAML 元数据。时区校验需要 IANA 数据；Windows 依赖包含 tzdata，其他系统缺少时区数据时也需安装。仅加载 SKILL.md 正文不要求运行这些脚本。
 
 ## 维护
 
 ```bash
+python -m pip install -r requirements.txt
 python scripts/validate.py
 python -m unittest discover -s tests -v
 ```
 
 [维护检查](references/consistency.md) 说明行为验收与部署检查。离线测试不代表真实平台已建表、提醒已投递或后台任务已成功执行。
 
-当前版本 **2.12.0**，详见 [CHANGELOG](CHANGELOG.md)。许可证：[MIT](LICENSE)。
+当前版本 **2.12.1**，详见 [CHANGELOG](CHANGELOG.md)。许可证：[MIT](LICENSE)。

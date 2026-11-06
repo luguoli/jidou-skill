@@ -13,7 +13,7 @@
 ## 时间与规则
 
 事件时刻 E 优先下次触发，缺失才用到期。时间必须可转换到配置时区。
-重复为空是一次性；非空先尝试解析 JSON 对象，否则按旧式自然语言循环规则解析。JSON 的 rule 为 null 是一次性；有循环 rule 才循环。
+重复为空是一次性；以 JSON 对象形式存储时须解析成功并校验字段，解析错误不能退回自然语言猜测；其余旧式文本按原循环规则解析。JSON 的 rule 为 null 是一次性；有循环 rule 才循环。无效规则仅跳过该行并去敏留痕，不改成猜测日期，不阻塞其他有效行。
 JSON 允许 rule、lead_minutes、timezone、anchor、override_reminder_at。lead_minutes 为非负分钟数，存在时覆盖枚举提前量，不叠加。
 枚举：准时=0，提前10分钟=10，提前1小时=60，提前1天=1440，提前3天=4320，提前1周=10080；未知值不猜。
 提醒时刻 R=override_reminder_at（有合法值时），否则 E−提前量。不要把到期改成 R。
@@ -23,7 +23,8 @@ JSON 允许 rule、lead_minutes、timezone、anchor、override_reminder_at。lea
 
 ## 循环滚动
 
-先核对当前事件是否已完成/跳过：模板上次结果若为 kind=occurrence 且 event_at与当前E代表同一时刻、status为completed/skipped，或存在明确引用该模板database_id/record_id和当前E的kind=completion子记录，则本期不生成提醒。确认回执后按原规则推进到下一期；只共享线索或日期相近不能作为完成证据。
+先核对当前事件是否已完成/跳过：模板上次结果若为 kind=occurrence 且 event_at与当前E代表同一时刻、status为completed/skipped，或存在明确引用该模板database_id/record_id和当前E的有效子回执，则本期不生成提醒。
+有效子回执包括 kind=completion/status=completed、kind=occurrence/status=skipped。兼容2.12.0的 completion 缺失status时，仅在子记录状态确为已完成时认有效；任何 status=voided 的回执均无效，不抑制提醒。确认有效回执后按原规则推进到下一期；只共享线索或日期相近不能作为完成证据。
 旧式循环保持原规则，隔周/每N天按持久锚点计算；不从用户临时改期的日期上简单加一个周期。
 月末按实际天数；每月31日跳过无31日的月份，2月29日跳过非闰年；农历平月/闰月明确区分。换算工具不存在或日期无法确定时不滚到猜测值。
 过期多轮时不逐轮轰炸，只考虑窗口内最近的一轮，旧轮次顺序跳过；若整段在静音内，推进到静音后按原节奏可提醒的事件。

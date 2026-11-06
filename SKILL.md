@@ -7,7 +7,7 @@ description: >-
   保留用户原话，按类型和领域归类；明确指定其他保存位置时走对应工具，普通闲聊不自动存储。
 license: MIT
 metadata:
-  version: "2.12.0"
+  version: "2.12.1"
   display_name: "记兜"
   display_name_en: "jidou"
   category: "productivity"
@@ -32,7 +32,7 @@ metadata:
 | 首次展示、用户问能做什么 | [使用示例](references/onboarding.md) |
 | 升级、旧名称、备份、分表、迁移 | [升级与数据维护](references/upgrade.md) |
 | 换平台 | [适配边界](references/portability.md) |
-| 修改本技能、验证包内容 | [维护检查](references/consistency.md) |
+| 确认格式、修改本技能、验证包内容 | [标准格式](references/format.md)、[维护检查](references/consistency.md) |
 
 ## 最小工作流程
 

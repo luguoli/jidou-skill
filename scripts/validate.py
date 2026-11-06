@@ -1,30 +1,44 @@
 #!/usr/bin/env python3
-"""Check jidou package invariants using only the Python standard library."""
+"""Check jidou metadata syntax, immutable schema contract and package invariants."""
 from __future__ import annotations
 
 import json
+import hashlib
 from pathlib import Path
 import re
 import sys
 from urllib.parse import unquote
 
 from render import ROOT, RenderError, render, version
+from frontmatter import SkillFormatError, load_skill
 
 EXPECTED_FIELDS = '内容 类型 标签 线索 记录时间 状态 到期 提醒 重复 下次触发 静音至 完成于 执行 执行内容 任务ID 上次结果 领域 优先级 相关人 来源 原文'.split()
+# Fingerprint of the v2.11.1 properties contract, not a second runtime schema.
+# Change only alongside an explicitly reviewed schema migration.
+SCHEMA_CONTRACT_SHA256 = '199fa106ad70d8428f23cf9feb57d40fbbdfd841904689b343c2abfa924a477a'
 
 
 def validate(root: Path = ROOT) -> list[str]:
     errors = []
     skill = (root / 'SKILL.md').read_text(encoding='utf-8')
-    front = re.match(r'\A---\n(.*?)\n---\n', skill, re.S)
-    if not front:
-        return ['SKILL.md has no delimited frontmatter.']
-    keys = re.findall(r'^([A-Za-z][\w-]*):', front.group(1), re.M)
-    if len(keys) != len(set(keys)) or not {'name', 'description'} <= set(keys) or set(keys) - {'name', 'description', 'license', 'metadata', 'allowed-tools'}:
-        errors.append('Frontmatter top-level keys are nonstandard, missing or duplicated.')
-    if not re.search(r'^name: jidou$', front.group(1), re.M) or not re.search(r'^description: >-\n  \S', front.group(1), re.M):
-        errors.append('Name or folded description is invalid.')
-    current = version(root)
+    try:
+        front, body = load_skill(root / 'SKILL.md')
+        current = version(root)
+    except (SkillFormatError, RenderError) as error:
+        return [str(error)]
+    keys = set(front)
+    if not {'name', 'description'} <= keys or keys - {'name', 'description', 'license', 'metadata', 'allowed-tools'}:
+        errors.append('Frontmatter top-level keys are nonstandard or missing.')
+    description = front.get('description')
+    if front.get('name') != 'jidou' or not isinstance(description, str) or not description.strip() or len(description) > 1024 or '<' in description or '>' in description:
+        errors.append('Name or description is invalid.')
+    if 'license' in front and not isinstance(front['license'], str):
+        errors.append('license must be a string.')
+    metadata = front.get('metadata')
+    if not isinstance(metadata, dict) or any(not isinstance(value, str) for value in metadata.values()):
+        errors.append('metadata must map string keys to string values.')
+    if not body.strip():
+        errors.append('SKILL.md needs a Markdown instruction body after frontmatter.')
     changelog = (root / 'CHANGELOG.md').read_text(encoding='utf-8')
     if re.search(r'^## (\d+\.\d+\.\d+)', changelog, re.M).group(1) != current:
         errors.append('Changelog latest version differs from metadata.')
@@ -37,6 +51,9 @@ def validate(root: Path = ROOT) -> list[str]:
     props = data['properties']
     if [p['name'] for p in props] != EXPECTED_FIELDS:
         errors.append('The existing 21 field names/order changed.')
+    digest = hashlib.sha256(json.dumps(props, ensure_ascii=False, sort_keys=True, separators=(',', ':')).encode('utf-8')).hexdigest()
+    if digest != SCHEMA_CONTRACT_SHA256:
+        errors.append('Schema compatibility contract changed: field types, order, enum text/options or date formats differ.')
     counts = {'类型': 10, '状态': 4, '提醒': 7, '执行': 5, '领域': 6, '优先级': 3}
     for prop in props:
         if len(prop['config']) != 1:
@@ -46,16 +63,17 @@ def validate(root: Path = ROOT) -> list[str]:
             if len(options) != counts[prop['name']] or len({x['text'] for x in options}) != len(options):
                 errors.append(f'Invalid select options: {prop["name"]}.')
     model = (root / 'references/data-model.md').read_text(encoding='utf-8')
-    rows = re.findall(r'^\| ([^|\n]+?) \| (?:text|select|date) \|', model, re.M)
-    if rows != EXPECTED_FIELDS:
-        errors.append('Field semantics table differs from schema order.')
+    rows = re.findall(r'^\| ([^|\n]+?) \| (text|select|date) \|', model, re.M)
+    expected_rows = [(prop['name'], next(iter(prop['config']))) for prop in props]
+    if rows != expected_rows:
+        errors.append('Field semantics table names/types differ from schema order/types.')
     for path in [root / 'SKILL.md', root / 'README.md', *(root / 'references').glob('*.md')]:
         text = path.read_text(encoding='utf-8')
         for raw in re.findall(r'\]\(([^)]+)\)', text):
-            if '://' in raw or raw.startswith('#'):
+            if '://' in raw:
                 continue
             target, _, fragment = unquote(raw).partition('#')
-            dest = (path.parent / target).resolve()
+            dest = (path.parent / target).resolve() if target else path.resolve()
             if not dest.is_relative_to(root.resolve()) or not dest.is_file():
                 errors.append(f'Broken/outside relative link in {path.relative_to(root)}: {raw}.')
             elif fragment:

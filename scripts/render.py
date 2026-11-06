@@ -9,6 +9,9 @@ from pathlib import Path, PurePosixPath
 import re
 import shlex
 import sys
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
+
+from frontmatter import SkillFormatError, skill_version
 
 ROOT = Path(__file__).resolve().parents[1]
 TOKEN = re.compile(r'__([A-Z_]+)__')
@@ -25,11 +28,18 @@ class RenderError(ValueError):
 
 
 def version(root: Path = ROOT) -> str:
-    text = (root / 'SKILL.md').read_text(encoding='utf-8')
-    match = re.search(r'^  version: "(\d+\.\d+\.\d+)"$', text, re.M)
-    if not match:
-        raise RenderError('Skill metadata version is missing or invalid.')
-    return match.group(1)
+    try:
+        return skill_version(root / 'SKILL.md')
+    except SkillFormatError as error:
+        raise RenderError(str(error)) from None
+
+
+def unsafe_scalar(value: str) -> bool:
+    return any(ord(char) < 32 or ord(char) == 127 or char in '|\u2028\u2029' for char in value)
+
+
+def unresolved(value: str) -> bool:
+    return bool(TOKEN.search(value) or re.search(r'<[^>]+>', value))
 
 
 def render(kind: str, context: dict, root: Path = ROOT) -> str:
@@ -61,15 +71,23 @@ def render(kind: str, context: dict, root: Path = ROOT) -> str:
         if key in ['QUIET_START_HOUR', 'QUIET_END_HOUR', 'CATCHUP_HOURS']:
             if type(value) is not int or (key != 'CATCHUP_HOURS' and not 0 <= value <= 23) or (key == 'CATCHUP_HOURS' and value <= 0):
                 raise RenderError('Invalid reminder timing settings.')
-        elif not isinstance(value, str) or any(c in value for c in '\r\n\t|'):
+        elif not isinstance(value, str) or unsafe_scalar(value):
             raise RenderError('Context scalar must be a single safe text value.')
+        elif value and not value.strip():
+            raise RenderError(f'Supplied context key is only whitespace: {key}.')
+        elif value and unresolved(value):
+            raise RenderError(f'Unresolved supplied context key: {key}.')
     if values['QUIET_START_HOUR'] == values['QUIET_END_HOUR']:
         raise RenderError('Quiet start and end must differ.')
     if not values['TIMEZONE'].strip():
         raise RenderError('Task timezone must not be empty.')
+    try:
+        ZoneInfo(values['TIMEZONE'])
+    except (ZoneInfoNotFoundError, ValueError):
+        raise RenderError('Timezone must resolve to an IANA zone; install system timezone data or tzdata if missing.') from None
     if kind != 'schema':
         ids = values.get('DATABASE_IDS', [values['DATABASE_ID']])
-        if not isinstance(ids, list) or not ids or any(not isinstance(x, str) or not x.strip() or any(c in x for c in '\r\n\t|') or TOKEN.search(x) or re.search(r'<[^>]+>', x) for x in ids):
+        if not isinstance(ids, list) or not ids or any(not isinstance(x, str) or not x.strip() or unsafe_scalar(x) or unresolved(x) for x in ids):
             raise RenderError('Active database IDs must be a nonempty list of resolved strings.')
         if len(set(ids)) != len(ids) or values['DATABASE_ID'] not in ids:
             raise RenderError('Active database IDs must be unique and include the primary database.')
