@@ -25,7 +25,13 @@ An Agent Skill for AI note-taking, personal knowledge management, to-do lists, r
 
 ## 开始使用
 
-下载 [技能包](https://github.com/luguoli/jidou-skill/archive/refs/heads/main.zip)，通过 AI 助手的技能导入功能安装；也可以把仓库地址发给支持安装技能的助手：
+在终端中运行以下命令安装（需 Node.js/npm），按提示选择要安装到的 AI 助手：
+
+```bash
+npx skills add luguoli/jidou-skill
+```
+
+也可以直接下载 [技能包](https://github.com/luguoli/jidou-skill/archive/refs/heads/main.zip)，通过 AI 助手的技能导入功能安装；也可以把仓库地址发给支持安装技能的助手：
 
 > 帮我安装记兜：https://github.com/luguoli/jidou-skill.git
 

@@ -23,7 +23,13 @@ Jidou is an Agent Skill for **AI note-taking, personal knowledge management, to-
 
 ## Get started
 
-Download the [skill package](https://github.com/luguoli/jidou-skill/archive/refs/heads/main.zip) and import it through your AI assistant’s skill interface. If your assistant supports installing skills, send it the repository URL:
+Run this command in your terminal (requires Node.js/npm), then follow the prompts to choose your AI assistant:
+
+```bash
+npx skills add luguoli/jidou-skill
+```
+
+Alternatively, download the [skill package](https://github.com/luguoli/jidou-skill/archive/refs/heads/main.zip) and import it through your AI assistant’s skill interface. If your assistant supports installing skills, send it the repository URL:
 
 > Install Jidou for me: https://github.com/luguoli/jidou-skill.git
 
