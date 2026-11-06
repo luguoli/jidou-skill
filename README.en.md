@@ -1,25 +1,38 @@
-# Jidou · AI Notes, To-do Lists & Reminders Agent Skill
+# Jidou · Quick Notes, Memos, To-do Lists & Reminders Skill
 
 [简体中文](README.md) | **English**
 
-**Your personal inbox in chat. Capture it now. Find it when you need it.**
+**Your quick notes in chat. Capture ideas, save references, manage tasks, and set reminders.**
 
-Jidou is an Agent Skill for **AI note-taking, personal knowledge management, to-do lists, recurring reminders, and scheduled tasks**. Capture ideas, references, and everyday tasks in conversation. Keep your original words, then find what you saved by person, topic, or date.
+Jidou is an Agent Skill for **quick capture, AI note-taking, memos, to-do lists, and reminders**. Use your AI assistant as a personal notepad: jot down an idea, save a link or reading highlight, track tasks and deadlines, set birthday or recurring reminders, log a habit, and organize your notes into a personal knowledge base.
 
-> “Make a note: could we generate weekly reports from chat history?”
+> “Make a quick note: could we generate weekly reports from chat history?”
 >
 > “Rent is due on the 5th of every month. Remind me two days before.”
 >
 > “What have I saved about Alex?”
 
+## What you can use Jidou for
+
+| What you need | How Jidou helps |
+|---|---|
+| Quick notes, memos, and sticky notes | Use chat as a notepad for quick capture, jotting things down, and everyday note-taking. |
+| Idea capture and bookmarks | Collect ideas, save links, and keep reading highlights and book notes for later. |
+| To-do lists and task management | Track tasks, deadlines, follow-ups, and daily plans. |
+| Scheduled and advance reminders | Set event, birthday, anniversary, and lunar-calendar reminders. |
+| Recurring reminders | Remember rent, bills, subscription renewals, and other daily, weekly, or monthly tasks. |
+| Habit tracking and time management | Log daily check-ins for reading or exercise and review task progress. |
+| Personal knowledge management | Search and organize saved notes into a personal knowledge base or second brain. |
+| Weekly reviews and scheduled tasks | Summarize work notes for weekly reports and monthly reviews; schedule automatic organization when the required tools are connected. |
+
 ## Highlights
 
-- **Capture things as you say them.** No forms or special commands. Several separate items in one message become separate notes.
-- **A clear summary, with your original words preserved.** Browse concise notes and retrieve the exact wording when you need it.
+- **Quick capture in conversation.** No forms or special commands. Several separate items in one message become separate notes.
+- **Notes, memos, and bookmarks together.** Save ideas, links, and reading highlights, with a clear summary and your original words available.
 - **Keep developing an idea.** Add something today and something else next week, then review the thread together.
-- **Flexible reminders.** One-off, recurring, lunar-calendar, and advance reminders, with options to reschedule just one occurrence, mute a period, or skip a round.
-- **Find things from the clues you remember.** Ask about a person, topic, date, or keyword.
-- **Follow through.** Track tasks and review progress. With the required tools connected, schedule scripts, check an API, or organize your notes automatically.
+- **Follow tasks through to completion.** Move deadlines, mark tasks done, and check what is still on your to-do list.
+- **Flexible recurring and birthday reminders.** Remember anniversaries, rent, bills, and lunar-calendar dates; reschedule, mute, or skip an occurrence.
+- **Organize your knowledge and review progress.** Find old notes, review habit check-ins, and build a personal knowledge base. With the required tools connected, schedule weekly report preparation.
 
 ## Get started
 
@@ -41,7 +54,7 @@ Then try: **“Make a note: I want to organize my desk this week.”**
 
 Say these to your assistant, replacing the details with your own. You can speak English throughout.
 
-### Capture notes
+### Quick notes, idea capture, and bookmarks
 
 | What you want to do | Try saying |
 |---|---|
@@ -58,7 +71,7 @@ Say these to your assistant, replacing the details with your own. You can speak 
 | Let Jidou categorize items | Note that I need to clean the air conditioner this weekend and pay the electricity bill at the end of the month. |
 | Set a priority | This is due Thursday and other people depend on it. Make it a high priority. |
 
-### Set reminders
+### Scheduled, recurring, and birthday reminders
 
 | What you want to do | Try saying |
 |---|---|
@@ -94,7 +107,7 @@ Say these to your assistant, replacing the details with your own. You can speak 
 | End a recurring series | I’ve canceled this subscription. Stop the renewal reminders. |
 | Archive an old idea | I’m putting this idea aside. Archive it, but keep the note. |
 
-### Find and review
+### Note search, knowledge management, and reviews
 
 | What you want to do | Try saying |
 |---|---|
@@ -110,7 +123,7 @@ Say these to your assistant, replacing the details with your own. You can speak 
 | Reflect on progress | What did I actually finish this month, and what is still stuck? |
 | Track a habit | Log today’s run and check how many days in a row I’ve kept it up recently. |
 
-### Schedule actions
+### Scheduled tasks and automatic organization
 
 | What you want to do | Try saying |
 |---|---|
