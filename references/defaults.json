@@ -1,0 +1,12 @@
+{
+  "reminder": {
+    "name": "记兜提醒",
+    "cron": "0 0 * * * *",
+    "timezone": "Asia/Shanghai",
+    "timeout_seconds": 600,
+    "retry_count": 0,
+    "quiet_start_hour": 22,
+    "quiet_end_hour": 8,
+    "catchup_hours": 24
+  }
+}

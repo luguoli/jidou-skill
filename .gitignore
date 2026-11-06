@@ -11,3 +11,10 @@ data-*.csv
 # 本地配置
 .env
 config.local.*
+
+# 开发缓存与实例渲染输出
+__pycache__/
+*.py[cod]
+context*.json
+rendered/
+exports/
