@@ -9,7 +9,7 @@ description: >-
   保留用户原话，按类型和领域归类；明确指定其他保存位置时走对应工具，普通闲聊不自动存储。
 license: MIT
 metadata:
-  version: "2.14.0"
+  version: "2.14.1"
   display_name: "记兜"
   display_name_en: "jidou"
   category: "productivity"

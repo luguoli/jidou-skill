@@ -174,6 +174,9 @@ class InstallationTests(unittest.TestCase):
         for name in ['SKILL.md', 'references/schema.json', 'scripts/jidou.py', 'requirements.txt']:
             self.assertTrue((destination / name).is_file())
         self.assertFalse((destination / 'archive').exists())
+        self.assertFalse((destination / 'tests').exists())
+        manifest = json.loads((destination / '.jidou-install.json').read_text(encoding='utf-8'))
+        self.assertFalse(any(name.startswith(('tests/', 'archive/')) for name in manifest['files']))
         self.assertFalse((destination / 'jidou.sqlite3').exists())
         self.assertFalse(self.home.exists())
 

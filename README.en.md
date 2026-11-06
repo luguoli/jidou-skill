@@ -140,4 +140,4 @@ Reminders and scheduled actions need the relevant capabilities enabled; your ass
 
 You don’t need to memorize these phrases or use Chinese. Jidou follows your conversation language, and you can correct a category directly. Ordinary conversation is not saved automatically. If you specify a different place to save something, that choice is respected.
 
-Version **2.14.0** · [MIT](LICENSE)
+Version **2.14.1** · [MIT](LICENSE)
