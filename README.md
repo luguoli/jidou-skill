@@ -27,7 +27,7 @@
 
 安装后，直接试着说：**「记一下：这周想把书桌整理一下。」**
 
-WorkBuddy、Codex、Claude Code、TRAE 等平台的安装方式见 [安装说明](references/install.md)。
+**不限平台，不限 Agent，支持标准 Skill 格式即可加载记兜。** [安装说明](references/install.md)
 
 ## 完整使用示例
 
